@@ -1,6 +1,6 @@
 # Runtime untuk dashboard Streamlit (app_komputasi_paralel.py)
-# Versi mengikuti lingkungan pengembangan lokal; minimal kompatibel.
-streamlit>=1.36
+# Streamlit dipin ke versi yang telah diuji; dependensi lain mengikuti batas minimum.
+streamlit==1.64.0
 numpy>=1.26
 pandas>=2.0
 Pillow>=10.0
