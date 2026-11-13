@@ -4,6 +4,8 @@
 
 Tugas UTS mata kuliah **Komputasi Paralel** — Program Studi Rekayasa Sistem Komputer, FMIPA Universitas Tanjungpura.
 
+**Demo online:** [Buka dashboard Streamlit](https://komputasi-paralel-uts-windranatan.streamlit.app/). Demo berjalan pada CPU cloud tanpa CUDA; angka benchmark laptop tersedia di [REKAP_BENCHMARK.md](REKAP_BENCHMARK.md).
+
 ## Tim
 
 | Nama | NIM |
