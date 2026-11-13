@@ -90,6 +90,8 @@ Community Cloud tidak menyediakan GPU CUDA. Dashboard menguji CPU host pada konf
 
 Hasil pengujian interaktif di cloud bukan hasil laptop pada laporan. Angka final CPU Intel/NVIDIA pada bagian Ringkasan Proyek berasal dari `REKAP_BENCHMARK.md`.
 
+**Jika muncul “Zzzz”:** Community Cloud menidurkan aplikasi setelah 12 jam tanpa kunjungan. Klik **“Yes, get this app back up!”** dan tunggu aplikasi aktif kembali; ini bukan pesan error. Waktu aktivasi dapat bervariasi. Lihat [panduan hibernasi Streamlit](https://docs.streamlit.io/deploy/streamlit-community-cloud/manage-your-app#app-hibernation).
+
 ## Peringatan
 
 - Dataset DIV2K (449 MB) dan citra uji turunan tidak disertakan karena ukuran; silakan unduh/siapkan ulang.
