@@ -45,9 +45,19 @@ Tugas UTS mata kuliah **Komputasi Paralel** — Program Studi Rekayasa Sistem Ko
 
 ### Prasyarat
 
-- Python 3.14, Numba, PIL, python-docx, Streamlit
-- NVIDIA CUDA Toolkit (folder `cuda_toolkit/` dibaca via `CUDA_HOME`; tidak dibundel)
-- Dataset DIV2K valid HR (tidak disertakan; unduh dari [sumber resmi](https://data.vision.ee.ethz.ch/cvl/DIV2K/) → `DIV2K_valid_HR/`)
+- Python dan dependensi dashboard dalam `requirements.txt`.
+- GPU NVIDIA serta CUDA Toolkit hanya diperlukan untuk jalur CUDA. Demo CPU tetap tersedia tanpa GPU.
+- Dataset DIV2K valid HR hanya diperlukan untuk mode batch; unduh dari [sumber resmi](https://data.vision.ee.ethz.ch/cvl/DIV2K/) dan ekstrak ke `DIV2K_valid_HR/`.
+
+```bash
+python -m venv .venv
+# Windows:
+.venv\Scripts\activate
+# Linux/macOS: source .venv/bin/activate
+python -m pip install -r requirements.txt
+```
+
+Generator dokumen memerlukan dependensi tambahan: `python -m pip install python-docx`.
 
 ### Siapkan citra uji
 
@@ -66,9 +76,17 @@ bench.bat
 ### Dashboard Streamlit
 
 ```bash
-run_app.bat
-# atau: streamlit run app_komputasi_paralel.py
+python -m streamlit run app_komputasi_paralel.py
+# Windows: run_app.bat juga memakai .venv jika tersedia.
 ```
+
+### Streamlit Community Cloud
+
+Gunakan repository `WindraNatan/komputasi-paralel-uts`, branch `main`, dan entrypoint `app_komputasi_paralel.py`. Dependensi diambil dari `requirements.txt`.
+
+Community Cloud tidak menyediakan GPU CUDA. Dashboard menguji CPU host pada konfigurasi 1/2/4/8 thread yang didukung pool Numba, tanpa mengganti diam-diam 8 thread menjadi 2 thread. Preset Peppers dan unggah citra tidak memerlukan dataset DIV2K. Mode batch membutuhkan dataset lokal yang tidak dibundel.
+
+Hasil pengujian interaktif di cloud bukan hasil laptop pada laporan. Angka final CPU Intel/NVIDIA pada bagian Ringkasan Proyek berasal dari `REKAP_BENCHMARK.md`.
 
 ## Peringatan
 

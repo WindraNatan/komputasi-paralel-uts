@@ -18,7 +18,7 @@ if os.path.exists(cuda_path):
         if os.path.isdir(p):
             os.environ["PATH"] = p + ";" + os.environ.get("PATH", "")
 
-from numba import set_num_threads, cuda
+from numba import set_num_threads, cuda, config as _numba_config
 
 # Kernel bersama: definisi tunggal di kernels_paralel.py, dipakai juga benchmark_v2.py,
 # sehingga kernel yang dijalankan dashboard selalu identik dengan yang diukur benchmark.
@@ -42,14 +42,8 @@ metode_labels = {
     METODE_BICUBIC: "Bicubic (Catmull-Rom)"
 }
 
-# Batas thread mengikuti NUMBA_NUM_THREADS (diturunkan dari affinity/cgroup),
-# bukan os.cpu_count() yang melaporkan CPU host total.
-from numba import config as _numba_config
-
-_MAX_THREADS = _numba_config.NUMBA_NUM_THREADS
-
-def _set_threads(n):
-    set_num_threads(min(n, _MAX_THREADS))
+# Uji hanya konfigurasi yang benar-benar tersedia dalam pool Numba host.
+CPU_THREADS = tuple(n for n in (1, 2, 4, 8) if n <= _numba_config.NUMBA_NUM_THREADS)
 
 # Pesan error CUDA dari warm_up_jit, ditampilkan di sidebar bila GPU gagal
 cuda_error_msg = None
@@ -93,8 +87,8 @@ def warm_up_jit():
 
 cuda_status = warm_up_jit()
 
-st.title("Benchmark Komputasi Paralel: CPU Multi-Core vs GPU CUDA")
-st.caption("Pengujian performa filter konvolusi spasial dan interpolasi upscaling citra.")
+st.title("Benchmark Komputasi Paralel: CPU Multi-Thread vs GPU CUDA")
+st.caption("Pengujian performa pada host yang menjalankan aplikasi, bukan hasil benchmark laptop pada laporan. Hasil final laptop tersedia di REKAP_BENCHMARK.md.")
 
 def run_cpu(img, op, filt, meth, out_h, out_w):
     if op == "Upscaling Citra":
@@ -214,28 +208,30 @@ kernel_dict = {
 
 exec_mode = st.sidebar.selectbox(
     "Mode Eksekusi:",
-    ["Semua Konfigurasi (CPU 1-8 Core & GPU)", "Uji Satuan (Core Tertentu / GPU)"]
+    ["Semua Konfigurasi Tersedia", "Uji Satuan (Thread Tertentu / GPU)"]
 )
 
-single_target = "CPU 1 Core"
-if exec_mode == "Uji Satuan (Core Tertentu / GPU)":
-    options = ["CPU 1 Core", "CPU 2 Cores", "CPU 4 Cores", "CPU 8 Cores"]
+single_target = "CPU 1 thread"
+if exec_mode == "Uji Satuan (Thread Tertentu / GPU)":
+    options = [f"CPU {n} thread" for n in CPU_THREADS]
     if cuda_status:
         options.append("GPU NVIDIA CUDA")
     single_target = st.sidebar.selectbox("Pilih Unit:", options)
 
 st.sidebar.markdown("---")
 st.sidebar.markdown("**Status Perangkat Keras**")
-st.sidebar.write("• **CPU:** Intel Core 5 210H (8 Core, 12 Thread)")
+st.sidebar.write(f"CPU host: batas pool Numba {_numba_config.NUMBA_NUM_THREADS} thread.")
+st.sidebar.caption("Konfigurasi yang diuji: " + ", ".join(map(str, CPU_THREADS)) + " thread; konfigurasi di atas batas host tidak dijalankan.")
 if cuda_status:
     dev = cuda.get_current_device()
     nama_gpu = dev.name.decode(errors="ignore").strip() if isinstance(dev.name, bytes) else str(dev.name)
     jumlah_sm = int(dev.MULTIPROCESSOR_COUNT)
     st.sidebar.success(f"• **GPU:** {nama_gpu} ({jumlah_sm} SM)")
 else:
-    st.sidebar.error("• **GPU:** CUDA tidak terdeteksi")
+    st.sidebar.info("CUDA tidak tersedia; pengujian menggunakan CPU host.")
     if cuda_error_msg:
-        st.sidebar.code(cuda_error_msg, language="text")
+        with st.sidebar.expander("Detail deteksi CUDA"):
+            st.code(cuda_error_msg, language="text")
 
 if files:
     if operation == "Upscaling Citra":
@@ -279,15 +275,15 @@ if files:
                 rec = {"No": i, "Citra": fname, "Lebar": w, "Tinggi": h}
                 t1 = None
                 cpu1_out = None
-                for c in [1, 2, 4, 8]:
-                    _set_threads(c)
+                for c in CPU_THREADS:
+                    set_num_threads(c)
                     t0 = time.perf_counter()
                     out_c = run_cpu(img_arr, operation, filter_type, method_code, out_h, out_w)
                     dur = time.perf_counter() - t0
                     if c == 1:
                         t1 = dur
                         cpu1_out = out_c
-                    rec[f"CPU {c} Core (ms)"] = dur * 1000.0
+                    rec[f"CPU {c} thread (ms)"] = dur * 1000.0
                     rec[f"Speedup CPU {c}"] = t1 / dur
 
                 gpu_out = None
@@ -341,9 +337,9 @@ if files:
             else:
                 agg["Karp-Flatt"].append("-")
 
-        for c in [1, 2, 4, 8]:
-            _tambah(f"CPU {c} Core (ms)", f"Speedup CPU {c}",
-                    f"CPU {c} Core{'s' if c > 1 else ''}", cores=c)
+        for c in CPU_THREADS:
+            _tambah(f"CPU {c} thread (ms)", f"Speedup CPU {c}",
+                    f"CPU {c} thread", cores=c)
         if cuda_status:
             _tambah("GPU Kernel (ms)", "Speedup GPU", "GPU CUDA (Kernel)", cores=0)
         df_agg = pd.DataFrame(agg)
@@ -358,14 +354,14 @@ if files:
             }),
             use_container_width=True
         )
-        st.caption("Metrik Karp-Flatt mengukur fraksi serial eksperimental. Peningkatan nilai pada 8 thread mencerminkan kontensi SMT (8 thread pada 4 P-core) serta biaya sinkronisasi antar-thread.")
+        st.caption("Karp-Flatt dihitung menggunakan jumlah thread yang dijalankan, bukan jumlah inti fisik; tidak didefinisikan untuk 1 thread atau GPU.")
 
         col_g1, col_g2 = st.columns(2)
         with col_g1:
             st.markdown("**Median Waktu Eksekusi per Citra (ms)**")
             st.bar_chart(df_agg.set_index("Unit Pemroses")[["Median Waktu (ms)"]])
         with col_g2:
-            st.markdown("**Median Speedup (Relatif ke CPU 1 Core)**")
+            st.markdown("**Median Speedup (Relatif ke CPU 1 thread)**")
             st.bar_chart(df_agg.set_index("Unit Pemroses")[["Median Speedup"]])
 
         with st.expander("Detail Per Citra", expanded=False):
@@ -412,14 +408,14 @@ elif img_loaded is not None:
     if start_btn:
         st.subheader("Hasil Pengujian")
         
-        if exec_mode == "Uji Satuan (Core Tertentu / GPU)":
+        if exec_mode == "Uji Satuan (Thread Tertentu / GPU)":
             with st.spinner(f"Memproses pada {single_target}..."):
                 res_img = None
                 t_exec = 0.0
                 
                 if "CPU" in single_target:
                     cores = int(single_target.split()[1])
-                    _set_threads(cores)
+                    set_num_threads(cores)
                     t0 = time.perf_counter()
                     res_img = run_cpu(img_arr, operation, filter_type, method_code, out_h, out_w)
                     t_exec = time.perf_counter() - t0
@@ -448,14 +444,14 @@ elif img_loaded is not None:
                 im_col2.image(res_norm, caption=f"Output {operation} ({single_target})", use_container_width=True)
 
         else:
-            with st.spinner("Menjalankan pengujian CPU 1, 2, 4, 8 core dan GPU CUDA..."):
+            with st.spinner("Menjalankan konfigurasi CPU yang tersedia" + (" dan GPU CUDA..." if cuda_status else "...")):
                 bench_results = []
                 last_result_img = None
                 
                 t1_baseline = None
                 res_cpu1 = None
-                for c in [1, 2, 4, 8]:
-                    _set_threads(c)
+                for c in CPU_THREADS:
+                    set_num_threads(c)
                     t0 = time.perf_counter()
                     res = run_cpu(img_arr, operation, filter_type, method_code, out_h, out_w)
                     dur = time.perf_counter() - t0
@@ -473,13 +469,13 @@ elif img_loaded is not None:
                     else:
                         kf_str = "-"
                     bench_results.append({
-                        "Unit Pemroses": f"CPU {c} Core{'s' if c > 1 else ''}",
+                        "Unit Pemroses": f"CPU {c} thread",
                         "Waktu (detik)": dur,
                         "Waktu (ms)": dur * 1000.0,
                         "Speedup": speedup,
                         "Efisiensi (%)": eff,
                         "Karp-Flatt": kf_str,
-                        "Kategori": "CPU Multi-Core"
+                        "Kategori": "CPU Multi-Thread"
                     })
                 
                 if cuda_status:
@@ -526,7 +522,7 @@ elif img_loaded is not None:
                     }),
                     use_container_width=True
                 )
-                st.caption("Metrik Karp-Flatt mengukur fraksi serial eksperimental. Peningkatan nilai pada 8 thread mencerminkan kontensi SMT (8 thread pada 4 P-core) serta biaya sinkronisasi antar-thread.")
+                st.caption("Karp-Flatt dihitung menggunakan jumlah thread yang dijalankan, bukan jumlah inti fisik; tidak didefinisikan untuk 1 thread atau GPU.")
                 
                 col_g1, col_g2 = st.columns(2)
                 
@@ -536,7 +532,7 @@ elif img_loaded is not None:
                     st.bar_chart(chart_time)
                     
                 with col_g2:
-                    st.markdown("**Speedup (Relatif ke CPU 1 Core)**")
+                    st.markdown("**Speedup (Relatif ke CPU 1 thread)**")
                     chart_spd = df_res.set_index("Unit Pemroses")[["Speedup"]]
                     st.bar_chart(chart_spd)
                 
