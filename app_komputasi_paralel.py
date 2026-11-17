@@ -6,17 +6,6 @@ import numpy as np
 from PIL import Image
 import streamlit as st
 import pandas as pd
-# Tema visual: gradient-border (ui-layouts) — slate/indigo, radius 16px
-st.markdown('''
-<style>
-  .stApp { background: linear-gradient(45deg, #080b11, #1e293b 50%, #172033); }
-  [data-testid="stSidebar"] { background: #080b11; border-right: 1px solid rgba(99,102,241,.25); }
-  .stButton>button { border-radius: 12px; border: 1px solid transparent;
-    background: linear-gradient(#080b11, #080b11) padding-box, conic-gradient(from 0deg, rgba(100,116,139,.48) 80%, #6366f1 86%, #a5b4fc 90%, #6366f1 94%, rgba(100,116,139,.48)) border-box; }
-  div[data-testid="stMetric"] { border-radius: 16px; background: #0f172a; padding: 1rem; }
-</style>
-''', unsafe_allow_html=True)
-
 
 # Konfigurasi Path DLL CUDA Toolkit Lokal untuk Numba
 base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -66,6 +55,17 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
+# Tema visual: gradient-border (ui-layouts) — slate/indigo, radius 16px
+st.markdown('''
+<style>
+  .stApp { background: linear-gradient(45deg, #080b11, #1e293b 50%, #172033); }
+  [data-testid="stSidebar"] { background: #080b11; border-right: 1px solid rgba(99,102,241,.25); }
+  .stButton>button { border-radius: 12px; border: 1px solid transparent;
+    background: linear-gradient(#080b11, #080b11) padding-box, conic-gradient(from 0deg, rgba(100,116,139,.48) 80%, #6366f1 86%, #a5b4fc 90%, #6366f1 94%, rgba(100,116,139,.48)) border-box; }
+  div[data-testid="stMetric"] { border-radius: 16px; background: #0f172a; padding: 1rem; }
+</style>
+''', unsafe_allow_html=True)
+
 # Pre-compile JIT Warm-up
 @st.cache_resource
 def warm_up_jit():
@@ -98,8 +98,8 @@ def warm_up_jit():
 
 cuda_status = warm_up_jit()
 
-st.title("Benchmark Komputasi Paralel: CPU Multi-Thread vs GPU CUDA")
-st.caption("Pengujian performa pada host yang menjalankan aplikasi, bukan hasil benchmark laptop pada laporan. Hasil final laptop tersedia di REKAP_BENCHMARK.md.")
+st.title("Benchmark CPU vs GPU")
+st.caption("Diukur pada host yang menjalankan aplikasi; hasil laptop ada di REKAP_BENCHMARK.md.")
 
 def run_cpu(img, op, filt, meth, out_h, out_w):
     if op == "Upscaling Citra":
@@ -125,10 +125,10 @@ def run_gpu(d_in, d_out, h, w, op, filt, meth, out_h, out_w, sy, sx):
             conv_gpu_kernel[grid, tpb](d_in, d_k, d_out, h, w, 3, 3)
     cuda.synchronize()
 
-st.sidebar.header("Konfigurasi Pengujian")
+st.sidebar.header("Pengujian")
 
 source_option = st.sidebar.radio(
-    "Pilihan Citra:",
+    "Sumber Citra:",
     ["Citra Acuan (Peppers)", "Batch Dataset (DIV2K)", "Unggah Citra"]
 )
 
@@ -150,7 +150,7 @@ if source_option == "Citra Acuan (Peppers)":
         img_loaded = Image.open(path_preset).convert('L')
         img_name = selected_preset
     else:
-        st.sidebar.warning(f"Berkas {selected_preset} tidak ditemukan di folder proyek.")
+        st.sidebar.warning(f"Berkas {selected_preset} tidak ada di folder proyek.")
 elif source_option == "Batch Dataset (DIV2K)":
     tier_options = {
         "Rendah 720p (30 Citra)": os.path.join(base_dir, "dataset_uji", "rendah_720p"),
@@ -164,15 +164,15 @@ elif source_option == "Batch Dataset (DIV2K)":
     if os.path.isdir(dataset_dir):
         files = sorted(f for f in os.listdir(dataset_dir) if f.lower().endswith(".png"))
         if not files:
-            st.sidebar.warning(f"Tidak ada citra PNG di folder {os.path.basename(dataset_dir)}.")
+            st.sidebar.warning(f"Tidak ada file PNG di {os.path.basename(dataset_dir)}.")
         else:
             default_n = min(30, len(files))
             n = st.sidebar.slider("Jumlah Citra:", 1, len(files), default_n)
             files = files[:n]
-            st.sidebar.success(f"{len(files)} citra siap diuji.")
+            st.sidebar.success(f"{len(files)} citra tersedia.")
     else:
         st.sidebar.warning(f"Folder {os.path.basename(dataset_dir)} belum ditemukan.")
-        st.info("Jalankan prepare_dataset_uji.py untuk membuat folder dataset bertingkat.")
+        st.info("Siapkan folder dataset dengan prepare_dataset_uji.py.")
 
     _res_ops = {"720p (1280x720)": (1280, 720),
                 "1080p (1920x1080)": (1920, 1080),
@@ -230,9 +230,9 @@ if exec_mode == "Uji Satuan (Thread Tertentu / GPU)":
     single_target = st.sidebar.selectbox("Pilih Unit:", options)
 
 st.sidebar.markdown("---")
-st.sidebar.markdown("**Status Perangkat Keras**")
+st.sidebar.markdown("**Perangkat**")
 st.sidebar.write(f"CPU host: batas pool Numba {_numba_config.NUMBA_NUM_THREADS} thread.")
-st.sidebar.caption("Konfigurasi yang diuji: " + ", ".join(map(str, CPU_THREADS)) + " thread; konfigurasi di atas batas host tidak dijalankan.")
+st.sidebar.caption("Thread yang diuji: " + ", ".join(map(str, CPU_THREADS)) + "; thread di atas batas host tidak dijalankan.")
 if cuda_status:
     dev = cuda.get_current_device()
     nama_gpu = dev.name.decode(errors="ignore").strip() if isinstance(dev.name, bytes) else str(dev.name)
@@ -268,11 +268,11 @@ if files:
         st.info(f"Batch: **{len(files)} citra** | Resolusi: **{out_w}x{out_h}** | Filter: **{filter_type}**")
 
     col_btn, _ = st.columns([1, 4])
-    start_btn = col_btn.button(f"Jalankan Batch ({len(files)} Citra)", type="primary")
+    start_btn = col_btn.button(f"Jalankan batch ({len(files)} citra)", type="primary")
 
     if start_btn:
         with st.spinner(f"Memproses {len(files)} citra..."):
-            prog = st.progress(0.0, text="Memulai pemrosesan...")
+            prog = st.progress(0.0, text="Memulai")
             rows = []
             for i, fname in enumerate(files, 1):
                 img0 = np.array(Image.open(os.path.join(dataset_dir, fname)).convert("L"),
@@ -320,14 +320,14 @@ if files:
                     rec["PSNR (dB)"] = round(psnr_val, 2)
 
                 rows.append(rec)
-                prog.progress(i / len(files), text=f"Selesai {i}/{len(files)} citra")
+                prog.progress(i / len(files), text=f"{i}/{len(files)}")
 
             df_batch = pd.DataFrame(rows)
 
-        st.subheader("Hasil Benchmark Batch")
+        st.subheader("Hasil batch")
 
         if operation == "Upscaling Citra" and "PSNR (dB)" in df_batch.columns:
-            st.markdown("**Evaluasi Kualitas Batch (Referensi: PIL Lanczos)**")
+            st.markdown("**Kualitas batch (acuan PIL Lanczos)**")
             q_col1, q_col2 = st.columns(2)
             q_col1.metric("Median MSE", f"{df_batch['MSE'].median():.4f}")
             q_col2.metric("Median PSNR", f"{df_batch['PSNR (dB)'].median():.2f} dB")
@@ -355,7 +355,6 @@ if files:
             _tambah("GPU Kernel (ms)", "Speedup GPU", "GPU CUDA (Kernel)", cores=0)
         df_agg = pd.DataFrame(agg)
 
-        st.markdown(f"**Ringkasan Agregat (N = {len(files)} citra)**")
         st.dataframe(
             df_agg.style.format({
                 "Median Waktu (ms)": "{:.1f}",
@@ -365,23 +364,23 @@ if files:
             }),
             use_container_width=True
         )
-        st.caption("Karp-Flatt dihitung menggunakan jumlah thread yang dijalankan, bukan jumlah inti fisik; tidak didefinisikan untuk 1 thread atau GPU.")
+        st.caption("Karp-Flatt memakai jumlah thread yang dijalankan, bukan inti fisik; tidak berlaku untuk 1 thread atau GPU.")
 
         col_g1, col_g2 = st.columns(2)
         with col_g1:
-            st.markdown("**Median Waktu Eksekusi per Citra (ms)**")
+            st.markdown("**Waktu median (ms)**")
             st.bar_chart(df_agg.set_index("Unit Pemroses")[["Median Waktu (ms)"]])
         with col_g2:
-            st.markdown("**Median Speedup (Relatif ke CPU 1 thread)**")
+            st.markdown("**Speedup relatif (CPU 1 thread)**")
             st.bar_chart(df_agg.set_index("Unit Pemroses")[["Median Speedup"]])
 
-        with st.expander("Detail Per Citra", expanded=False):
+        with st.expander("Rincian per citra", expanded=False):
             st.dataframe(df_batch, use_container_width=True)
 
         csv_batch = df_batch.to_csv(index=False).encode("utf-8")
         nama_op = (filter_type or metode_labels[method_code]).lower().replace(" ", "_")
         st.download_button(
-            label="Unduh Data Batch (CSV)",
+            label="Unduh CSV batch",
             data=csv_batch,
             file_name=f"batch_div2k_{operation.split()[0].lower()}_{nama_op}"
                       f"_{len(files)}citra_{out_w}x{out_h}.csv",
@@ -393,7 +392,7 @@ elif img_loaded is not None:
     h, w = img_arr.shape
     total_pixels = h * w
     
-    st.info(f"Citra aktif: **{img_name}** ({w}x{h} piksel)")
+    st.info(f"Citra: **{img_name}** ({w}x{h} piksel)")
 
     if operation == "Upscaling Citra":
         if target_size.startswith("4K"):
@@ -414,10 +413,10 @@ elif img_loaded is not None:
         sy = sx = 1.0
 
     col_btn, _ = st.columns([1, 4])
-    start_btn = col_btn.button(f"Jalankan {operation}", type="primary")
+    start_btn = col_btn.button("Mulai pengujian", type="primary")
     
     if start_btn:
-        st.subheader("Hasil Pengujian")
+        st.subheader("Hasil")
         
         if exec_mode == "Uji Satuan (Thread Tertentu / GPU)":
             with st.spinner(f"Memproses pada {single_target}..."):
@@ -449,13 +448,12 @@ elif img_loaded is not None:
                 c2.metric("Waktu Eksekusi", f"{1000*t_exec:.1f} ms", f"{t_exec:.4f} s")
                 c3.metric("Throughput", f"{(out_pixels / (t_exec * 1e6)):.2f} MPiksel/s")
 
-                st.markdown("### Perbandingan Citra")
                 im_col1, im_col2 = st.columns(2)
-                im_col1.image(img_loaded, caption=f"Citra Input ({w}x{h})", use_container_width=True)
-                im_col2.image(res_norm, caption=f"Output {operation} ({single_target})", use_container_width=True)
+                im_col1.image(img_loaded, caption=f"Input ({w}x{h})", use_container_width=True)
+                im_col2.image(res_norm, caption=f"Output ({single_target})", use_container_width=True)
 
         else:
-            with st.spinner("Menjalankan konfigurasi CPU yang tersedia" + (" dan GPU CUDA..." if cuda_status else "...")):
+            with st.spinner("Menjalankan pengujian terpilih..." + (" dan GPU." if cuda_status else ".")):
                 bench_results = []
                 last_result_img = None
                 
@@ -533,31 +531,29 @@ elif img_loaded is not None:
                     }),
                     use_container_width=True
                 )
-                st.caption("Karp-Flatt dihitung menggunakan jumlah thread yang dijalankan, bukan jumlah inti fisik; tidak didefinisikan untuk 1 thread atau GPU.")
+                st.caption("Karp-Flatt memakai jumlah thread yang dijalankan, bukan inti fisik; tidak berlaku untuk 1 thread atau GPU.")
                 
                 col_g1, col_g2 = st.columns(2)
                 
                 with col_g1:
-                    st.markdown("**Waktu Eksekusi (ms)**")
+                    st.markdown("**Waktu (ms)**")
                     chart_time = df_res.set_index("Unit Pemroses")[["Waktu (ms)"]]
                     st.bar_chart(chart_time)
                     
                 with col_g2:
-                    st.markdown("**Speedup (Relatif ke CPU 1 thread)**")
+                    st.markdown("**Speedup (vs CPU 1 thread)**")
                     chart_spd = df_res.set_index("Unit Pemroses")[["Speedup"]]
                     st.bar_chart(chart_spd)
                 
-                st.markdown("### Perbandingan Citra")
-                res_norm = np.clip(last_result_img, 0, 255).astype(np.uint8)
                 im_c1, im_c2 = st.columns(2)
-                im_c1.image(img_loaded, caption=f"Citra Input ({w}x{h})", use_container_width=True)
+                im_c1.image(img_loaded, caption=f"Input ({w}x{h})", use_container_width=True)
                 im_c2.image(res_norm,
-                            caption=f"Output {operation} ({filter_type or metode_labels[method_code]})",
+                            caption=f"Output ({filter_type or metode_labels[method_code]})",
                             use_container_width=True)
 
                 if cuda_status and res_cpu1 is not None and last_result_img is not None:
                     max_diff = float(np.max(np.abs(last_result_img - res_cpu1)))
-                    st.caption(f"Verifikasi numerik: deviasi maksimum CPU vs GPU = {max_diff:.6f}")
+                    st.caption(f"Deviasi maksimum CPU vs GPU = {max_diff:.6f}")
 
                 if operation == "Upscaling Citra" and last_result_img is not None:
                     hasil = np.clip(last_result_img, 0, 255)
@@ -568,17 +564,17 @@ elif img_loaded is not None:
                         psnr = float(20.0 * math.log10(255.0 / math.sqrt(mse)))
                     else:
                         psnr = float('inf')
-                    st.markdown("**Evaluasi Kualitas Upscaling (Referensi: PIL Lanczos)**")
+                    st.markdown("**Kualitas upscaling (acuan PIL Lanczos)**")
                     st.write(f"MSE: **{mse:.4f}** | PSNR: **{psnr:.2f} dB** ({metode_labels[method_code]})")
 
                 csv_data = df_res.to_csv(index=False).encode('utf-8')
                 nama_op = (filter_type or metode_labels[method_code]).lower().replace(' ', '_')
                 st.download_button(
-                    label="Unduh Data Benchmark (CSV)",
+                    label="Unduh CSV hasil",
                     data=csv_data,
                     file_name=f"benchmark_{operation.split()[0].lower()}_{nama_op}_{w}x{h}_ke_{out_w}x{out_h}.csv",
                     mime="text/csv"
                 )
 
 else:
-    st.info("Pilih citra acuan di sidebar atau unggah berkas citra untuk memulai.")
+    st.info("Pilih citra atau unggah berkas untuk mulai.")

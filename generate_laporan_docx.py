@@ -221,9 +221,7 @@ def build_document():
 
     page_break()
 
-    # ======================================================================
     # KATA PENGANTAR
-    # ======================================================================
     h1("KATA PENGANTAR")
     emit("Puji syukur penulis panjatkan ke hadirat Tuhan Yang Maha Esa atas "
          "selesainya laporan tugas ujian tengah semester mata kuliah Komputasi "
@@ -249,9 +247,7 @@ def build_document():
     emit("Penulis", align=WD_ALIGN_PARAGRAPH.RIGHT, first_indent=None)
     page_break()
 
-    # ======================================================================
     # DAFTAR ISI
-    # ======================================================================
     h1("DAFTAR ISI")
     for item in [
         "KATA PENGANTAR", "DAFTAR ISI", "DAFTAR TABEL", "DAFTAR PERSAMAAN",
@@ -292,9 +288,7 @@ def build_document():
             p_isi.paragraph_format.left_indent = Cm(0.75)
     page_break()
 
-    # ======================================================================
     # DAFTAR TABEL
-    # ======================================================================
     h1("DAFTAR TABEL")
     for item in [
         "Tabel 2.1 Ringkasan Penelitian Terdahulu",
@@ -312,9 +306,7 @@ def build_document():
              space_after=1)
     page_break()
 
-    # ======================================================================
     # DAFTAR PERSAMAAN
-    # ======================================================================
     h1("DAFTAR PERSAMAAN")
     for item in [
         "Persamaan 2.1 Konvolusi Diskret Dua Dimensi",
@@ -331,9 +323,7 @@ def build_document():
              space_after=1)
     page_break()
 
-    # ======================================================================
     # BAB I PENDAHULUAN
-    # ======================================================================
     h1("BAB I")
     h1("PENDAHULUAN")
 
@@ -473,9 +463,7 @@ def build_document():
 
     page_break()
 
-    # ======================================================================
     # BAB II LANDASAN TEORI
-    # ======================================================================
     h1("BAB II")
     h1("LANDASAN TEORI")
 
@@ -687,9 +675,7 @@ def build_document():
 
 
 
-    # ======================================================================
     # BAB III METODOLOGI PENELITIAN
-    # ======================================================================
     h1("BAB III")
     h1("METODOLOGI PENELITIAN")
 
@@ -926,9 +912,7 @@ def build_document():
 
     page_break()
 
-    # ======================================================================
     # BAB IV HASIL DAN PEMBAHASAN
-    # ======================================================================
     h1("BAB IV")
     h1("HASIL DAN PEMBAHASAN")
 
@@ -1236,9 +1220,7 @@ def build_document():
 
     page_break()
 
-    # ======================================================================
     # BAB V PENUTUP
-    # ======================================================================
     h1("BAB V")
     h1("PENUTUP")
 
@@ -1319,9 +1301,7 @@ def build_document():
 
     page_break()
 
-    # ======================================================================
     # DAFTAR PUSTAKA
-    # ======================================================================
     h1("DAFTAR PUSTAKA")
     for ref in [
         "Agustsson, E., & Timofte, R. (2017). NTIRE 2017 challenge on "
