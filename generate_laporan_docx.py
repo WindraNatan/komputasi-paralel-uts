@@ -363,9 +363,6 @@ def build_document():
          "ditemukan oleh Asaduzzaman, Jojigiri, Sabu, dan Tailam (2021) yang "
          "menunjukkan waktu pemindahan memori antara _host_ dan _device_ "
          "menjadi beban latensi utama pada pengolahan citra berbasis GPU. "
-         "Gadler dan Basso (2023) melengkapinya dengan profil hierarki memori "
-         "yang membuktikan bahwa konvolusi paralel pada GPU lebih dipengaruhi "
-         "oleh pola akses memori global daripada oleh jumlah inti komputasi. "
          "Pada ranah pemilihan operator, Suryanegara dan Pratama (2024) "
          "mengonfirmasi efisiensi komputasi deteksi tepi Sobel, sedangkan "
          "Ruijters dan Thévenaz (2012) serta Thévenaz, Blu, dan Unser (2000) "
@@ -381,10 +378,8 @@ def build_document():
          "resolusi juga belum dipetakan secara kuantitatif, demikian pula "
          "kedekatan numerik hasil interpolasi _Nearest Neighbor_, _Bilinear_, "
          "dan _Bicubic_ terhadap referensi _Lanczos_ dalam lingkungan "
-         "komputasi paralel. Midyanti dan Sitorus (2021) telah membuktikan "
-         "efektivitas komputasi paralel untuk ekstraksi fitur citra skala "
-         "besar pada lingkungan akademik yang sejenis, sehingga pengujian "
-         "bertingkat pada topik ini layak dilanjutkan.")
+         "komputasi paralel. Pengujian bertingkat pada topik ini layak "
+         "dilanjutkan.")
     emit("Penelitian ini melaksanakan pengujian tolok ukur (_benchmark_) yang "
          "terkontrol pada 100 citra dataset DIV2K untuk sembilan konfigurasi "
          "filter konvolusi dan delapan belas konfigurasi _upscaling_. Sisi CPU "
@@ -672,18 +667,12 @@ def build_document():
             ["Asaduzzaman dkk. (2021)", "Waktu transfer memori GPU",
              "Pemindahan memori host-device menjadi beban latensi utama "
              "pada pengolahan citra berbasis GPU"],
-            ["Gadler dan Basso (2023)", "Profil hierarki memori konvolusi",
-             "Konvolusi paralel GPU lebih dipengaruhi pola akses memori "
-             "global daripada jumlah inti komputasi"],
             ["Suryanegara dan Pratama (2024)", "Komparasi deteksi tepi",
              "Deteksi tepi Sobel memiliki efisiensi komputasi spasial "
              "yang terbaik dibanding Prewitt dan Canny"],
             ["Ruijters dan Thévenaz (2012)", "Interpolasi B-spline GPU",
              "Prafilter interpolasi cubic B-spline pada GPU memangkas "
              "waktu komputasi orde tinggi"],
-            ["Midyanti dan Sitorus (2021)", "Komputasi paralel citra",
-             "Komputasi paralel efektif mempercepat ekstraksi fitur citra "
-             "skala besar"],
         ],
         widths=[4.2, 4.0, 6.2],
         caption="Tabel 2.1 Ringkasan Penelitian Terdahulu")
@@ -1338,9 +1327,9 @@ def build_document():
     h1("DAFTAR PUSTAKA")
     for ref in [
         "Agustsson, E., & Timofte, R. (2017). NTIRE 2017 challenge on "
-        "single image super-resolution: Dataset and results. _2017 "
-        "IEEE Conference on Computer Vision and Pattern Recognition "
-        "Workshops (CVPRW)_, 1-9. "
+        "single image super-resolution: Dataset and study. _2017 IEEE "
+        "Conference on Computer Vision and Pattern Recognition "
+        "Workshops (CVPRW)_, 1122-1131. "
         "https://doi.org/10.1109/CVPRW.2017.150",
 
         "Akasapu, A., Sailaja, V., & Prasad, G. (2021). Implementation "
@@ -1359,11 +1348,6 @@ def build_document():
         "and Communication Workshop and Conference (CCWC)_, 0689-0695. "
         "https://doi.org/10.1109/CCWC51732.2021.9376170",
 
-        "Gadler, D., & Basso, T. C. (2023). A parallel algorithm for "
-        "image convolution with multi-GPU support. _Journal of "
-        "Parallel and Distributed Computing_, 172, 1-12. "
-        "https://doi.org/10.1016/j.jpdc.2022.12.008",
-
         "Karp, A. H., & Flatt, H. P. (1990). Measuring parallel "
         "processor performance. _Communications of the ACM_, 33(5), "
         "539-543. https://doi.org/10.1145/78607.78614",
@@ -1372,12 +1356,6 @@ def build_document():
         "LLVM-based Python JIT compiler. _Proceedings of the Second "
         "Workshop on the LLVM Compiler Infrastructure in HPC "
         "(LLVM-HPC 2015)_, 1-6. https://doi.org/10.1145/2833157.2833162",
-
-        "Midyanti, D. A., & Sitorus, M. S. (2021). Implementasi "
-        "komputasi paralel pada ekstraksi fitur citra. _Jurnal "
-        "Coding: Sistem Komputer, Teknik Informatika, dan "
-        "Ilmu Komputer_, 9(2), 51-59. "
-        "https://doi.org/10.26418/coding.v9i2.48201",
 
         "Ruijters, D., & Thévenaz, P. (2012). GPU prefilter for "
         "accurate cubic B-spline interpolation. _The Computer "
