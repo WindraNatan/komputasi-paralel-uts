@@ -99,7 +99,7 @@ def warm_up_jit():
 cuda_status = warm_up_jit()
 
 st.title("Benchmark CPU vs GPU")
-st.caption("Diukur pada host yang menjalankan aplikasi; hasil laptop ada di REKAP_BENCHMARK.md.")
+st.caption("Diukur pada host yang menjalankan aplikasi")
 
 def run_cpu(img, op, filt, meth, out_h, out_w):
     if op == "Upscaling Citra":
@@ -239,7 +239,7 @@ if cuda_status:
     jumlah_sm = int(dev.MULTIPROCESSOR_COUNT)
     st.sidebar.success(f"• **GPU:** {nama_gpu} ({jumlah_sm} SM)")
 else:
-    st.sidebar.info("CUDA tidak tersedia; pengujian menggunakan CPU host.")
+    st.sidebar.info("CUDA tidak tersedia. Pengujian akan menggunakan CPU host.")
     if cuda_error_msg:
         with st.sidebar.expander("Detail deteksi CUDA"):
             st.code(cuda_error_msg, language="text")
@@ -332,16 +332,16 @@ if files:
             q_col1.metric("Median MSE", f"{df_batch['MSE'].median():.4f}")
             q_col2.metric("Median PSNR", f"{df_batch['PSNR (dB)'].median():.2f} dB")
 
-        agg = {"Unit Pemroses": [], "Median Waktu (ms)": [], "Rerata Waktu (ms)": [],
-               "Median Speedup": [], "Rerata Speedup": [], "Karp-Flatt": []}
+        agg = {"Unit Pemroses": [], "Median Waktu (ms)": [], "Rata-rata Waktu (ms)": [],
+               "Median Speedup": [], "Rata-rata Speedup": [], "Karp-Flatt": []}
 
         def _tambah(kolom_waktu, kolom_spd, label, cores=1):
             agg["Unit Pemroses"].append(label)
             agg["Median Waktu (ms)"].append(df_batch[kolom_waktu].median())
-            agg["Rerata Waktu (ms)"].append(df_batch[kolom_waktu].mean())
+            agg["Rata-rata Waktu (ms)"].append(df_batch[kolom_waktu].mean())
             med_spd = df_batch[kolom_spd].median()
             agg["Median Speedup"].append(med_spd)
-            agg["Rerata Speedup"].append(df_batch[kolom_spd].mean())
+            agg["Rata-rata Speedup"].append(df_batch[kolom_spd].mean())
             if cores > 1:
                 kf = ((1.0 / med_spd) - (1.0 / cores)) / (1.0 - (1.0 / cores))
                 agg["Karp-Flatt"].append(f"{kf:.4f}")
@@ -358,9 +358,9 @@ if files:
         st.dataframe(
             df_agg.style.format({
                 "Median Waktu (ms)": "{:.1f}",
-                "Rerata Waktu (ms)": "{:.1f}",
+                "Rata-rata Waktu (ms)": "{:.1f}",
                 "Median Speedup": "{:.2f}x",
-                "Rerata Speedup": "{:.2f}x"
+                "Rata-rata Speedup": "{:.2f}x"
             }),
             use_container_width=True
         )
