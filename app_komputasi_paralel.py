@@ -453,7 +453,7 @@ elif img_loaded is not None:
                 im_col2.image(res_norm, caption=f"Output ({single_target})", use_container_width=True)
 
         else:
-            with st.spinner("Menjalankan pengujian terpilih..." + (" dan GPU." if cuda_status else ".")):
+            with st.spinner("Menjalankan pengujian terpilih..."):
                 bench_results = []
                 last_result_img = None
                 
