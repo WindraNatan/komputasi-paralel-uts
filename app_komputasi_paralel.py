@@ -171,8 +171,8 @@ elif source_option == "Batch Dataset (DIV2K)":
             files = files[:n]
             st.sidebar.success(f"{len(files)} citra tersedia.")
     else:
-        st.sidebar.warning(f"Folder {os.path.basename(dataset_dir)} belum ditemukan.")
-        st.info("Siapkan folder dataset dengan prepare_dataset_uji.py.")
+        st.sidebar.warning(f"Folder {os.path.basename(dataset_dir)} tidak ada di host ini.")
+        st.info("Mode batch butuh dataset lokal. Streamlit Cloud tidak menyertakan dataset_uji; jalankan app secara lokal.")
 
     _res_ops = {"720p (1280x720)": (1280, 720),
                 "1080p (1920x1080)": (1920, 1080),
