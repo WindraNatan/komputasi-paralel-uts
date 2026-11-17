@@ -363,7 +363,7 @@ def build_document():
          "ditemukan oleh Asaduzzaman, Jojigiri, Sabu, dan Tailam (2021) yang "
          "menunjukkan waktu pemindahan memori antara _host_ dan _device_ "
          "menjadi beban latensi utama pada pengolahan citra berbasis GPU. "
-         "Pada ranah pemilihan operator, Suryanegara dan Pratama (2024) "
+         "Pada ranah pemilihan operator, Diana dkk. (2026) "
          "mengonfirmasi efisiensi komputasi deteksi tepi Sobel, sedangkan "
          "Ruijters dan Thévenaz (2012) serta Thévenaz, Blu, dan Unser (2000) "
          "menjadi rujukan klasik untuk interpolasi orde tinggi pada GPU.")
@@ -667,7 +667,7 @@ def build_document():
             ["Asaduzzaman dkk. (2021)", "Waktu transfer memori GPU",
              "Pemindahan memori host-device menjadi beban latensi utama "
              "pada pengolahan citra berbasis GPU"],
-            ["Suryanegara dan Pratama (2024)", "Komparasi deteksi tepi",
+            ["Diana dkk. (2026)", "Komparasi deteksi tepi",
              "Deteksi tepi Sobel memiliki efisiensi komputasi spasial "
              "yang terbaik dibanding Prewitt dan Canny"],
             ["Ruijters dan Thévenaz (2012)", "Interpolasi B-spline GPU",
@@ -1361,10 +1361,10 @@ def build_document():
         "accurate cubic B-spline interpolation. _The Computer "
         "Journal_, 55(1), 15-20. https://doi.org/10.1093/comjnl/bxq086",
 
-        "Suryanegara, M. A., & Pratama, A. R. (2024). Comparison of "
+        "Diana, D., Putri, A. R., & Santoso, B. (2026). Comparison of "
         "Sobel, Prewitt, and Canny edge detection methods in digital "
-        "images. _Journal of Applied Informatics and Computing_, 8(1), "
-        "85-94. https://doi.org/10.30871/jaic.v10i3.12860",
+        "images. _Journal of Applied Informatics and Computing_, 10(3), "
+        "2424-2430. https://doi.org/10.30871/jaic.v10i3.12860",
 
         "Thévenaz, P., Blu, T., & Unser, M. (2000). Interpolation "
         "revisited. _IEEE Transactions on Medical Imaging_, 19(7), "
