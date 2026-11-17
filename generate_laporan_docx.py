@@ -1341,7 +1341,7 @@ def build_document():
         "single image super-resolution: Dataset and results. _2017 "
         "IEEE Conference on Computer Vision and Pattern Recognition "
         "Workshops (CVPRW)_, 1-9. "
-        "https://doi.org/10.1109/CVPRW.2017.151",
+        "https://doi.org/10.1109/CVPRW.2017.150",
 
         "Akasapu, A., Sailaja, V., & Prasad, G. (2021). Implementation "
         "of Sobel filter using CUDA. _IOP Conference Series: Materials "
@@ -1357,7 +1357,7 @@ def build_document():
         "Studying execution time and memory transfer time of image "
         "processing using GPU cards. _2021 IEEE 11th Annual Computing "
         "and Communication Workshop and Conference (CCWC)_, 0689-0695. "
-        "https://doi.org/10.1109/CCWC51732.2021.9376044",
+        "https://doi.org/10.1109/CCWC51732.2021.9376170",
 
         "Gadler, D., & Basso, T. C. (2023). A parallel algorithm for "
         "image convolution with multi-GPU support. _Journal of "
@@ -1371,7 +1371,7 @@ def build_document():
         "Lam, S. K., Pitrou, A., & Seibert, S. (2015). Numba: A "
         "LLVM-based Python JIT compiler. _Proceedings of the Second "
         "Workshop on the LLVM Compiler Infrastructure in HPC "
-        "(LLVM-HPC 2015)_, 1-6. https://doi.org/10.1109/LLVM.2015.7153179",
+        "(LLVM-HPC 2015)_, 1-6. https://doi.org/10.1145/2833157.2833162",
 
         "Midyanti, D. A., & Sitorus, M. S. (2021). Implementasi "
         "komputasi paralel pada ekstraksi fitur citra. _Jurnal "
@@ -1386,7 +1386,7 @@ def build_document():
         "Suryanegara, M. A., & Pratama, A. R. (2024). Comparison of "
         "Sobel, Prewitt, and Canny edge detection methods in digital "
         "images. _Journal of Applied Informatics and Computing_, 8(1), "
-        "85-94. https://doi.org/10.30871/jaic.v8i1.6789",
+        "85-94. https://doi.org/10.30871/jaic.v10i3.12860",
 
         "Thévenaz, P., Blu, T., & Unser, M. (2000). Interpolation "
         "revisited. _IEEE Transactions on Medical Imaging_, 19(7), "
