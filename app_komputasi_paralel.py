@@ -6,6 +6,17 @@ import numpy as np
 from PIL import Image
 import streamlit as st
 import pandas as pd
+# Tema visual: gradient-border (ui-layouts) — slate/indigo, radius 16px
+st.markdown('''
+<style>
+  .stApp { background: linear-gradient(45deg, #080b11, #1e293b 50%, #172033); }
+  [data-testid="stSidebar"] { background: #080b11; border-right: 1px solid rgba(99,102,241,.25); }
+  .stButton>button { border-radius: 12px; border: 1px solid transparent;
+    background: linear-gradient(#080b11, #080b11) padding-box, conic-gradient(from 0deg, rgba(100,116,139,.48) 80%, #6366f1 86%, #a5b4fc 90%, #6366f1 94%, rgba(100,116,139,.48)) border-box; }
+  div[data-testid="stMetric"] { border-radius: 16px; background: #0f172a; padding: 1rem; }
+</style>
+''', unsafe_allow_html=True)
+
 
 # Konfigurasi Path DLL CUDA Toolkit Lokal untuk Numba
 base_dir = os.path.dirname(os.path.abspath(__file__))

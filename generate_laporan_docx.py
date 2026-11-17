@@ -187,9 +187,7 @@ def build_document():
     def page_break():
         doc.add_paragraph().add_run().add_break(WD_BREAK.PAGE)
 
-    # ======================================================================
     # HALAMAN COVER
-    # ======================================================================
     emit("LAPORAN TUGAS UJIAN TENGAH SEMESTER", align=WD_ALIGN_PARAGRAPH.CENTER,
          first_indent=None, space_after=2, bold=True)
     emit("MATA KULIAH KOMPUTASI PARALEL", align=WD_ALIGN_PARAGRAPH.CENTER,
